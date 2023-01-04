@@ -12,21 +12,23 @@ public class VoteTest {
     static final AtomicInteger c = new AtomicInteger();
 
     public static void main(String[] args) {
-        var threadList = IntStream.range(0, 10).mapToObj(c -> new Vote(true)).map(v -> new Thread(() -> {
-            try {
-                test1(v);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        })).toList();
+        var threadList = IntStream.range(0, 10)
+                .mapToObj(c -> new Vote(true))
+                .map(v -> new Thread(() -> test1(v)))
+                .toList();
         threadList.forEach(Thread::start);
     }
 
-    public static void test1(Vote vote) throws Exception {
+    public static void test1(Vote vote) {
         //投 10 次
         while (true) {
             //选手编号
-            var success = vote.vote("2");
+            boolean success = false;
+            try {
+                success = vote.vote("2");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (success) {
                 a.set(a.get() + 1);
             } else {
