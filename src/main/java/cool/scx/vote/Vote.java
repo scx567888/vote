@@ -2,6 +2,10 @@ package cool.scx.vote;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import cool.scx.config.ScxEnvironment;
+import cool.scx.enumeration.HttpMethod;
+import cool.scx.http_client.ScxHttpClientHelper;
+import cool.scx.http_client.ScxHttpClientRequest;
+import cool.scx.http_client.body.JsonBody;
 import cool.scx.logging.ScxLoggerFactory;
 import cool.scx.logging.ScxLoggingLevel;
 import cool.scx.logging.ScxLoggingType;
@@ -9,9 +13,6 @@ import cool.scx.util.Base64Utils;
 import cool.scx.util.ObjectUtils;
 import cool.scx.util.ansi.Ansi;
 import cool.scx.util.ansi.AnsiStyle;
-import cool.scx.util.http.HttpClientHelper;
-import cool.scx.util.http.JsonBody;
-import cool.scx.util.http.Options;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 final class Vote {
@@ -74,7 +76,7 @@ final class Vote {
 
         //发起投票请求
         logger.debug("发起投票请求...");
-        var res = HttpClientHelper.post(VOTE_URL, new JsonBody(Map.of(
+        var res = ScxHttpClientHelper.post(VOTE_URL, new JsonBody(Map.of(
                 "choice_id", choice_id,
                 "poll_id", POLL_ID,
                 "token", token
@@ -109,9 +111,10 @@ final class Vote {
      * @throws JsonProcessingException a
      */
     private static Captcha getCaptcha() throws Exception {
-        var res = HttpClientHelper.post(CAPTCHA_URL,
-                new JsonBody(Map.of("width", 75, "height", 25)),
-                new Options()
+        var res = ScxHttpClientHelper.request(new ScxHttpClientRequest()
+                        .method(HttpMethod.POST)
+                        .uri(URI.create(CAPTCHA_URL))
+                        .body(new JsonBody(Map.of("width", 75, "height", 25)))
                         .setHeader("sec-ch-ua", "\"Not?A_Brand\";v=\"8\", \"Chromium\";v=\"108\", \"Microsoft Edge\";v=\"108\"")
                         .setHeader("Accept", "application/json, text/plain, */*")
                         .setHeader("sec-ch-ua-mobile", "?0")
@@ -125,7 +128,7 @@ final class Vote {
                         .setHeader("Accept-Encoding", "gzip, deflate, br")
                         .setHeader("Accept-Language", "zh-CN,zh;q=0.9")
         );
-        return ObjectUtils.jsonMapper().readValue(res.body().getBytes(), Captcha.class);
+        return ObjectUtils.jsonMapper().readValue(res.body().toBytes(), Captcha.class);
     }
 
     /**
