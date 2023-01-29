@@ -8,7 +8,6 @@ import cool.scx.http_client.ScxHttpClientRequest;
 import cool.scx.http_client.body.JsonBody;
 import cool.scx.logging.ScxLoggerFactory;
 import cool.scx.logging.ScxLoggingLevel;
-import cool.scx.logging.ScxLoggingType;
 import cool.scx.util.Base64Utils;
 import cool.scx.util.ObjectUtils;
 import cool.scx.util.ansi.Ansi;
