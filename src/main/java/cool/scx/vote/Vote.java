@@ -147,8 +147,7 @@ final class Vote {
      * 初始化日志配置
      */
     public static void initLogger() {
-        ScxLoggerFactory.getLogger(Vote.class).setLevel(ScxLoggingLevel.ERROR);
-        ScxLoggerFactory.setDefaultType(ScxLoggingType.CONSOLE);
+        ScxLoggerFactory.getLogger(Vote.class).config().setLevel(ScxLoggingLevel.ERROR);
     }
 
 }
